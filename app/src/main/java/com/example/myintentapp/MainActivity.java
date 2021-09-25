@@ -13,7 +13,14 @@ import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     TextView tvResult;
-    private int REQUEST_CODE = 100;
+    // private int REQUEST_CODE = 100;
+    final ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == MoveForResultActivity.RESULT_CODE && result.getData() != null) {
+                    int selectedValue = result.getData().getIntExtra(MoveForResultActivity.EXTRA_SELECTED_VALUE, 0);
+                    tvResult.setText(String.format("Hasil : %s", selectedValue));
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,18 +75,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else if (view.getId() == R.id.btn_move_for_result) {
             Intent moveForResultIntent = new Intent(MainActivity.this, MoveForResultActivity.class);
-            startActivityForResult(moveForResultIntent, REQUEST_CODE);
+            resultLauncher.launch(moveForResultIntent);
         }
 
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE) {
-            if (resultCode == MoveForResultActivity.RESULT_CODE) {
-                int selectedValue = data.getIntExtra(MoveForResultActivity.EXTRA_SELECTED_VALUE, 0);
-                tvResult.setText(String.format("Hasil : %s", selectedValue));
-            }
-        }
     }
 }
